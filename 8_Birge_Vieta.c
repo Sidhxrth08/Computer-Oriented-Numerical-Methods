@@ -1,58 +1,72 @@
 #include <stdio.h>
 #include <math.h>
 
-int main(void)
+#define f(x) ((x)*(x)*(x)+7*(x)*(x)+24*(x)-15)
+
+int main()
 {
-    float arr[] = {1, 7, 24, -15};
-    float a;
-    float approx, approx_old;
-    int count = 0;
+    int i, n;
+    float a[20], b[20], c[20];
+    float x0, x1, ep;
 
-    printf("Enter Initial Approximation:\n");
-    scanf("%f", &a);
+    printf("Enter degree of polynomial: ");
+    scanf("%d", &n);
 
-    while (1)
+    printf("Enter coefficients in descending order:\n");
+    for(i = 0; i <= n; i++)
     {
-        float b[4] = {arr[0]};
-        float fx = arr[0];
-        float f_der = 0.0f;
+        scanf("%f", &a[i]);
+    }
 
-        /* Calculate f(x) */
-        for (int i = 0; i < 3; i++)
+    printf("Enter initial value of x0: ");
+    scanf("%f", &x0);
+
+    printf("Enter allowed error (ep): ");
+    scanf("%f", &ep);
+
+    printf("Enter maximum number of iterations: ");
+    scanf("%d", &n);
+
+    for(i = 1; i <= n; i++)
+    {
+        int j, degree;
+        degree = sizeof(a) / sizeof(a[0]);
+
+        b[0] = a[0];
+
+        for(j = 1; j <= 3; j++)
         {
-            fx = fx * a + arr[i + 1];
-            b[i + 1] = fx;
+            b[j] = a[j] + x0 * b[j-1];
         }
 
-        /* Calculate f'(x) */
-        f_der = b[0];
+        c[0] = b[0];
 
-        for (int i = 0; i < 2; i++)
+        for(j = 1; j < 3; j++)
         {
-            f_der = f_der * a + b[i + 1];
+            c[j] = b[j] + x0 * c[j-1];
         }
 
-        if (fabsf(f_der) < 0.000001f)
+        if(fabs(c[2]) < 0.000001)
         {
-            printf("Derivative is too small.\n");
+            printf("Denominator is too small.");
             return 0;
         }
 
-        approx_old = a;
-        approx = a - (fx / f_der);
-        count++;
+        x1 = x0 - b[3] / c[2];
 
-        printf("Iteration %d -> %f\n", count, approx);
+        printf("Iteration %d: x = %f\n", i, x1);
 
-        if (fabsf(approx - approx_old) < 0.0001f)
+        if(fabs(x1 - x0) < ep)
         {
-            printf("Root -> %f\n", approx);
-            printf("Total Iterations -> %d\n", count);
-            break;
+            printf("\nApproximate root = %f", x1);
+            printf("\nNumber of iterations = %d", i);
+            return 0;
         }
 
-        a = approx;
+        x0 = x1;
     }
+
+    printf("\nSolution does not converge in %d iterations.", n);
 
     return 0;
 }
