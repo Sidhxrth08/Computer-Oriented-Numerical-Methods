@@ -1,19 +1,17 @@
 #include <stdio.h>
 #include <math.h>
 
-#define f(x) ((x)*(x)*(x)+7*(x)*(x)+24*(x)-15)
-
 int main()
 {
-    int i, n;
+    int i, j, degree, max_iter;
     float a[20], b[20], c[20];
     float x0, x1, ep;
 
     printf("Enter degree of polynomial: ");
-    scanf("%d", &n);
+    scanf("%d", &degree);
 
     printf("Enter coefficients in descending order:\n");
-    for(i = 0; i <= n; i++)
+    for(i = 0; i <= degree; i++)
     {
         scanf("%f", &a[i]);
     }
@@ -25,34 +23,31 @@ int main()
     scanf("%f", &ep);
 
     printf("Enter maximum number of iterations: ");
-    scanf("%d", &n);
+    scanf("%d", &max_iter);
 
-    for(i = 1; i <= n; i++)
+    for(i = 1; i <= max_iter; i++)
     {
-        int j, degree;
-        degree = sizeof(a) / sizeof(a[0]);
-
         b[0] = a[0];
 
-        for(j = 1; j <= 3; j++)
+        for(j = 1; j <= degree; j++)
         {
             b[j] = a[j] + x0 * b[j-1];
         }
 
         c[0] = b[0];
 
-        for(j = 1; j < 3; j++)
+        for(j = 1; j < degree; j++)
         {
             c[j] = b[j] + x0 * c[j-1];
         }
 
-        if(fabs(c[2]) < 0.000001)
+        if(fabs(c[degree-1]) < 0.000001)
         {
             printf("Denominator is too small.");
             return 0;
         }
 
-        x1 = x0 - b[3] / c[2];
+        x1 = x0 - b[degree] / c[degree-1];
 
         printf("Iteration %d: x = %f\n", i, x1);
 
@@ -66,7 +61,8 @@ int main()
         x0 = x1;
     }
 
-    printf("\nSolution does not converge in %d iterations.", n);
+    printf("\nSolution does not converge in %d iterations.",
+           max_iter);
 
     return 0;
 }
